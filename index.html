@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Javascript Async Examples</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class = "container">
+        <h1 style="text-align: center; margin-bottom:100px">X Factory's Workers</h1>
+        <div class="row selectionSide">
+            <div class="col md-3">
+                <h3>Select refresher type</h3>
+            </div>
+            <div class="col md-2">
+                <select id="refresher">
+                    <option value="callback">Callback</option>
+                    <option value="promise">Promise</option>
+                </select>
+            </div>
+            <div class = "col-md-2">
+                <button id="refresh" class="button">Refresh</button>
+                <button id="clear" class="button">Clear</button>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Gender</th>
+                        <th>Age</th>
+                    </tr>
+                </thead>
+                <tbody id="workersTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script>
+    const Table = document.getElementById("workersTable");
+    let People = [{"name":"Jack", "surname":"Morrison", "gender":"Male", "age":21},
+                    {"name":"Emma", "surname":"Snow", "gender":"Female", "age":19}];
+
+    function clearTable(element){
+        element.innerHTML = "";
+    }
+
+    function getPeople(){
+        clearTable(Table);
+        People.forEach((element) =>{
+            Table.innerHTML+= 
+            `
+            <tr>
+                <td>${element.name}</td>
+                <td>${element.surname}</td>
+                <td>${element.gender}</td>
+                <td>${element.age}</td>
+            </tr>
+            `
+        });
+    }
+
+    function addWorkerCallBack(callback){
+        callback();
+        setTimeout(() =>{
+            People.push({"name":"Matt", "surname":"Gerard","gender":"male", "age":"24"});
+            callback();
+        },2000);
+    }
+
+    function addWorkerPromise(){
+        getPeople();
+        return new Promise((resolve, reject) =>{
+            setTimeout(() => {
+                People.push({"name":"Matt", "surname":"Gerard","gender":"male", "age":"24"});
+                const error = false;
+                if(!error) {
+                    resolve();
+                } else{
+                    reject("Error: something went wrong during Promise process.");
+                }
+            },2000)
+        })
+        
+    }
+
+    let clearEvent =  document.getElementById("clear").addEventListener("click", ()=>{
+        clearTable(Table);
+    });
+    let refreshEvent = document.getElementById("refresh").addEventListener("click", () =>{
+        let refresherType = document.getElementById("refresher").selectedOptions[0].value;
+        switch(refresherType){
+            case "callback":
+                addWorkerCallBack(getPeople);
+                break;
+            case "promise":
+                addWorkerPromise().then(getPeople);
+                break;
+        };
+    });
+</script>
+</html>
